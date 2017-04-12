@@ -102,5 +102,54 @@ namespace GridViewUsefulStuff
                 return cmd.ExecuteNonQuery();
             }
         }
+
+        //Delete Multiple Rows trazio ovu ali ona je opasna jer otvara vrata SQL inekciji
+        public static void DeleteMultipleEmployee(List<string> employeeID)
+        {
+            string CS = ConfigurationManager.ConnectionStrings["QuotationDB"].ConnectionString;
+            using(SqlConnection con = new SqlConnection(CS))
+            {
+                string strInInput = string.Empty;
+                foreach(string str in employeeID)
+                {
+                    strInInput += str + ",";
+                }
+                strInInput = strInInput.Remove(strInInput.LastIndexOf(","));
+                string deleteCommand = "delete from EmployeeASPNETTutorial where EmployeeId IN (" + strInInput + ")";
+                SqlCommand cmd = new SqlCommand(deleteCommand, con);
+
+                con.Open();
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        //Konacno, ova ispod je dobra i treba se koristiti
+        public static void DeleteMultipleEmployeeSecure(List<string> employeeID)
+        {
+            string CS = ConfigurationManager.ConnectionStrings["QuotationDB"].ConnectionString;
+            using (SqlConnection con = new SqlConnection(CS))
+            {
+                //Kljucni dio koda je ova izgradnja parametara preko Lambda funkcije. Recimo da sam selektovao prva tri Id-a ali da su to 10,11,12 redni brojevi
+                //Dobicu listu (@Parameter1;@Parameter2;@Parameter3)
+                List<string> parameters = employeeID.Select((s, i) => "@Parameter" + i.ToString()).ToList();
+                //Zatim tu listu pretvaram u string koji izgleda ovako: @Parameter1,@Parameter2,@Parameter3
+                string inClause = string.Join(",", parameters);
+                //Zatim to dodajem u delete komantu i sav kod izgleda ovako:
+                //Delete from EmployeeASPNETTutorial where EmployeeId IN ( @Parameter1,@Parameter2,@Parameter3)
+                string deleteCommandText = "Delete from EmployeeASPNETTutorial where EmployeeId IN (" + inClause + ")";
+
+                SqlCommand cmd = new SqlCommand(deleteCommandText, con);
+                //Zatim moram dodati vrijednosti parametara
+                for(int i = 0; i < parameters.Count; i++)
+                {
+                    //Funkcija AddWithValue omogucava da indeksno dodajem vrijednosti iz ulaznog araja
+                    cmd.Parameters.AddWithValue(parameters[i], employeeID[i]);   
+                }
+
+                con.Open();
+                cmd.ExecuteNonQuery();
+                
+            }
+        }
     }
 }

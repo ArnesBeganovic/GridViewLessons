@@ -94,6 +94,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Delete Multiple Rows\Default.aspx" />
     <Content Include="No Data Source\NoDataSourceControl.aspx" />
     <Content Include="Object Data Source\ObjectDataSourceInsertEditDelete.aspx" />
     <Content Include="packages.config" />
@@ -109,6 +110,13 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Delete Multiple Rows\Default.aspx.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Delete Multiple Rows\Default.aspx.designer.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+    </Compile>
     <Compile Include="No Data Source\NoDataSourceControl.aspx.cs">
       <DependentUpon>NoDataSourceControl.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
